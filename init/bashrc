@@ -1,0 +1,48 @@
+ 
+function get_dockertags() {
+  tagname=$1
+  echo "Getting tag list in [$tagname]..."
+  echo
+  curl -s https://registry.hub.docker.com/v1/repositories/$tagname/tags | jq .[].name -r
+}
+
+function az_login() {
+  az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT
+}
+ 
+PIP=$(which pip)
+if ! test -z $PIP;
+then
+  source <($PIP completion --bash 2> /dev/null)
+fi
+
+AZ_COMPLETION=$(which az.completion.sh)
+if ! test -z $AZ_COMPLETION;
+then
+  source $AZ_COMPLETION
+fi
+
+KUBECTL=$(which kubectl)
+if ! test -z $KUBECTL;
+then
+  source <(kubectl completion bash)
+fi
+
+export PATH=$PATH/bin:$PATH
+
+# Edit for your environment
+export EDITOR=vim
+export AZURE_CLIENT_ID=
+export AZURE_CLIENT_SECRET=
+export AZURE_TENANT_ID=
+export AZURE_SUBSCRIPTION_ID=
+export AZURE_TENANT=
+
+export SLACK_URI=
+export SLACK_CHANNEL=
+export MONGO_URI=
+export LANG=C
+
+export AKS_NAME=
+export AKS_RESOURCE_GROUP=
+export AKS_LOCATION=

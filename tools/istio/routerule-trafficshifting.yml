@@ -1,0 +1,15 @@
+apiVersion: config.istio.io/v1alpha1
+kind: RouteRule
+metadata:
+  name: mywebsample-routerule
+spec:
+  destination:
+    name: mywebsample
+  precedence: 1
+  route:
+  - labels:
+      version: v2
+    weight: 90
+  - labels:
+      version: v5
+    weight: 10

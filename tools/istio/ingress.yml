@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: myistio-ingress
+  namespace: mynamespace
+  annotations:
+    kubernetes.io/ingress.class: istio
+spec:
+  rules:
+  - host: myistio-ingress.v.uname.link
+    http:
+      paths:
+      - path: /.*
+        backend:
+          serviceName: mywebsample
+          servicePort: 80

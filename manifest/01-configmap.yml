@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myconfigmap
+  namespace: mynamespace
+data:
+  SLACK_CHANNEL: "#message"
+  RP_BACKEND: mywebsample.mynamespace.svc.cluster.local
+  MONGODB_DB_NAME: mydb
+  MONGODB_COLL_NAME: mycoll
+

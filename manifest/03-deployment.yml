@@ -1,0 +1,128 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: myappsample
+  name: myappsample
+  namespace: mynamespace
+spec:
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: myappsample
+    spec:
+      containers:
+      - env:
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: MONGODB_URI
+        - name: MONGODB_COLL_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: myconfigmap
+              key: MONGODB_COLL_NAME
+        - name: MONGODB_DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: myconfigmap
+              key: MONGODB_DB_NAME
+        image: shkawan/appsample:v7.07
+        imagePullPolicy: IfNotPresent
+        name: myappsample
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: mynotifypod
+  name: mynotifypod
+  namespace: mynamespace
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mynotifypod
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: mynotifypod
+    spec:
+      volumes:
+      - name: shared-vol
+        emptyDir: {}
+      containers:
+      - name: notifyservice
+        image: shkawan/notifyservice:v2.00
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: shared-vol
+          mountPath: /var/shared-vol
+        env:
+        - name: SLACK_URI
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: SLACK_URI
+      - image: shkawan/docker-postfix:v0.01
+        imagePullPolicy: IfNotPresent
+        name: docker-postfix
+        volumeMounts:
+        - name: shared-vol
+          mountPath: /data
+        env:
+        - name: SASL
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: SASL
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: mywebsample
+  name: mywebsample
+  namespace: mynamespace
+spec:
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        run: mywebsample
+        version: v1
+    spec:
+      containers:
+      - env:
+        - name: API_HOST
+          value: myappsample
+        - name: NOTIFY_URI
+          value: http://mynotifypod/api/slack
+        - name: SLACK_CHANNEL
+          valueFrom:
+            configMapKeyRef:
+              name: myconfigmap
+              key: SLACK_CHANNEL
+        image: shkawan/websample:v2.70
+        imagePullPolicy: IfNotPresent
+        name: mywebsample
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+

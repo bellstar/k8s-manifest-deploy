@@ -1,0 +1,9 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceBinding
+metadata:
+  name: example-cosmosdb-mongodb-binding
+  namespace: default
+spec:
+  instanceRef:
+    name: example-cosmosdb-mongodb-instance
+  secretName: example-cosmosdb-mongodb-secret
