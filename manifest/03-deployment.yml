@@ -35,7 +35,7 @@ spec:
             configMapKeyRef:
               name: myconfigmap
               key: MONGODB_DB_NAME
-        image: shkawan/appsample:v7.07
+        image: kahara/appsample:v1.10
         imagePullPolicy: IfNotPresent
         name: myappsample
       dnsPolicy: ClusterFirst
@@ -68,7 +68,7 @@ spec:
         emptyDir: {}
       containers:
       - name: notifyservice
-        image: shkawan/notifyservice:v2.00
+        image: kahara/notifyservice:v1.00
         imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: shared-vol
@@ -79,7 +79,7 @@ spec:
             secretKeyRef:
               name: mysecret
               key: SLACK_URI
-      - image: shkawan/docker-postfix:v0.01
+      - image: kahara/docker-postfix:v1.00
         imagePullPolicy: IfNotPresent
         name: docker-postfix
         volumeMounts:
@@ -120,7 +120,7 @@ spec:
             configMapKeyRef:
               name: myconfigmap
               key: SLACK_CHANNEL
-        image: shkawan/websample:v2.70
+        image: kahara/websample:v1.00
         imagePullPolicy: IfNotPresent
         name: mywebsample
       dnsPolicy: ClusterFirst
