@@ -39,6 +39,29 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
+    run: myreverseproxy
+  name: myreverseproxy
+  namespace: mynamespace
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  - name: https
+    port: 443
+    protocol: TCP
+    targetPort: 443
+  selector:
+    run: myreverseproxy
+  sessionAffinity: None
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
     run: mywebsample
   name: mywebsample
   namespace: mynamespace
@@ -54,4 +77,5 @@ spec:
   selector:
     run: mywebsample
   sessionAffinity: None
-  type: LoadBalancer
+  type: ClusterIP
+  
