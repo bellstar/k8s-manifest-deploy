@@ -18,13 +18,11 @@ spec:
        env:
        - name: WSID
          valueFrom:
-           # secretKeyRef:
            configMapKeyRef:
              name: loganalytics-params
              key: wsid
        - name: KEY 
          valueFrom:
-           # secretKeyRef:
            configMapKeyRef:
              name: loganalytics-params
              key: key

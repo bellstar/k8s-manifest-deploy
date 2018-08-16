@@ -4,6 +4,5 @@ metadata:
   name: loganalytics-params
   namespace: default
 data:
-  wsid: ${WSID}
-  key: ${KEY}
-
+  wsid: 1c4560af-fcfa-4d38-889d-b04eb7d03019
+  key: 7O/4P8dRUVK+UsnC/5lCoRPj5BLrhk/YT5qhrSd9fPUXib6CF0vvZZ780hTbB7xNL76t/8OUvl/RGpPfHWzRvw==
