@@ -123,7 +123,7 @@ spec:
             configMapKeyRef:
               name: myconfigmap
               key: RP_BACKEND
-        image: shkawan/simple-reverseproxy:v0.23
+        image: kahara/simple-reverseproxy:v1.00
         imagePullPolicy: IfNotPresent
         name: myreverseproxy
       dnsPolicy: ClusterFirst
