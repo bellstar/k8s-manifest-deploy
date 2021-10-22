@@ -1,164 +1,221 @@
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  labels:
-    run: myappsample
-  name: myappsample
-  namespace: mynamespace
-spec:
-  replicas: 2
-  strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-    type: RollingUpdate
-  template:
-    metadata:
-      labels:
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      run: myappsample
+    name: myappsample
+    namespace: mynamespace
+  spec:
+    progressDeadlineSeconds: 2147483647
+    replicas: 2
+    revisionHistoryLimit: 2147483647
+    selector:
+      matchLabels:
         run: myappsample
-    spec:
-      containers:
-      - env:
-        - name: MONGODB_URI
-          valueFrom:
-            secretKeyRef:
-              name: mysecret
-              key: MONGODB_URI
-        - name: MONGODB_COLL_NAME
-          valueFrom:
-            configMapKeyRef:
-              name: myconfigmap
-              key: MONGODB_COLL_NAME
-        - name: MONGODB_DB_NAME
-          valueFrom:
-            configMapKeyRef:
-              name: myconfigmap
-              key: MONGODB_DB_NAME
-        image: kahara/appsample:v1.10
-        imagePullPolicy: IfNotPresent
-        name: myappsample
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  labels:
-    app: mynotifypod
-  name: mynotifypod
-  namespace: mynamespace
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
+    strategy:
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          run: myappsample
+      spec:
+        containers:
+        - env:
+          - name: MONGODB_URI
+            valueFrom:
+              secretKeyRef:
+                key: MONGODB_URI
+                name: mysecret
+          - name: MONGODB_COLL_NAME
+            valueFrom:
+              configMapKeyRef:
+                key: MONGODB_COLL_NAME
+                name: myconfigmap
+          - name: MONGODB_DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                key: MONGODB_DB_NAME
+                name: myconfigmap
+          image: kahara/appsample:v1.10
+          imagePullPolicy: IfNotPresent
+          name: myappsample
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
       app: mynotifypod
-  strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-    type: RollingUpdate
-  template:
-    metadata:
-      labels:
+    name: mynotifypod
+    namespace: mynamespace
+  spec:
+    progressDeadlineSeconds: 2147483647
+    replicas: 2
+    revisionHistoryLimit: 2147483647
+    selector:
+      matchLabels:
         app: mynotifypod
-    spec:
-      volumes:
-      - name: shared-vol
-        emptyDir: {}
-      containers:
-      - name: notifyservice
-        image: kahara/notifyservice:v1.00
-        imagePullPolicy: IfNotPresent
-        volumeMounts:
-        - name: shared-vol
-          mountPath: /var/shared-vol
-        env:
-        - name: SLACK_URI
-          valueFrom:
-            secretKeyRef:
-              name: mysecret
-              key: SLACK_URI
-      - image: kahara/docker-postfix:v1.00
-        imagePullPolicy: IfNotPresent
-        name: docker-postfix
-        volumeMounts:
-        - name: shared-vol
-          mountPath: /data
-        env:
-        - name: SASL
-          valueFrom:
-            secretKeyRef:
-              name: mysecret
-              key: SASL
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  labels:
-    run: myreverseproxy
-  name: myreverseproxy
-  namespace: mynamespace
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
+    strategy:
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: mynotifypod
+      spec:
+        containers:
+        - env:
+          - name: SLACK_URI
+            valueFrom:
+              secretKeyRef:
+                key: SLACK_URI
+                name: mysecret
+          image: kahara/notifyservice:v1.00
+          imagePullPolicy: IfNotPresent
+          name: notifyservice
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/shared-vol
+            name: shared-vol
+        - env:
+          - name: SASL
+            valueFrom:
+              secretKeyRef:
+                key: SASL
+                name: mysecret
+          image: kahara/docker-postfix:v1.00
+          imagePullPolicy: IfNotPresent
+          name: docker-postfix
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /data
+            name: shared-vol
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: shared-vol
+  status: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
       run: myreverseproxy
-  strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-    type: RollingUpdate
-  template:
-    metadata:
-      labels:
+    name: myreverseproxy
+    namespace: mynamespace
+  spec:
+    progressDeadlineSeconds: 2147483647
+    replicas: 2
+    revisionHistoryLimit: 2147483647
+    selector:
+      matchLabels:
         run: myreverseproxy
-    spec:
-      containers:
-      - env:
-        - name: RP_BACKEND
-          valueFrom:
-            configMapKeyRef:
-              name: myconfigmap
-              key: RP_BACKEND
-        image: kahara/simple-reverseproxy:v1.00
-        imagePullPolicy: IfNotPresent
-        name: myreverseproxy
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
-
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  labels:
-    run: mywebsample
-  name: mywebsample
-  namespace: mynamespace
-spec:
-  replicas: 4
-  template:
-    metadata:
-      labels:
+    strategy:
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          run: myreverseproxy
+      spec:
+        containers:
+        - env:
+          - name: RP_BACKEND
+            valueFrom:
+              configMapKeyRef:
+                key: RP_BACKEND
+                name: myconfigmap
+          image: kahara/simple-reverseproxy:v1.00
+          imagePullPolicy: IfNotPresent
+          name: myreverseproxy
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      run: mywebsample
+    name: mywebsample
+    namespace: mynamespace
+  spec:
+    progressDeadlineSeconds: 2147483647
+    replicas: 4
+    revisionHistoryLimit: 2147483647
+    selector:
+      matchLabels:
         run: mywebsample
         version: v1
-    spec:
-      containers:
-      - env:
-        - name: API_HOST
-          value: myappsample
-        - name: NOTIFY_URI
-          value: http://mynotifypod/api/slack
-        - name: SLACK_CHANNEL
-          valueFrom:
-            configMapKeyRef:
-              name: myconfigmap
-              key: SLACK_CHANNEL
-        image: kahara/websample:v1.00
-        imagePullPolicy: IfNotPresent
-        name: mywebsample
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
-
+    strategy:
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          run: mywebsample
+          version: v1
+      spec:
+        containers:
+        - env:
+          - name: API_HOST
+            value: myappsample
+          - name: NOTIFY_URI
+            value: http://mynotifypod/api/slack
+          - name: SLACK_CHANNEL
+            valueFrom:
+              configMapKeyRef:
+                key: SLACK_CHANNEL
+                name: myconfigmap
+          image: kahara/websample:v1.00
+          imagePullPolicy: IfNotPresent
+          name: mywebsample
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status: {}
+kind: List
+metadata: {}
